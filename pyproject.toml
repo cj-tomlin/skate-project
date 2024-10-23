@@ -4,12 +4,14 @@ version = "0.1.0"
 description = "A FastAPI project"
 authors = ["Chris Tomlin"]
 readme = "README.md"
+packages = [
+    { include = "app" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.115.3"
 uvicorn = "^0.32.0"
-
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.0.1"
