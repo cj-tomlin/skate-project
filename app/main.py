@@ -3,12 +3,10 @@ import webbrowser
 
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
-from starlette.staticfiles import StaticFiles
 
 import config
 
 from fastapi import FastAPI
-from app.api import routes
 
 ###################################################################
 ## Initialise FastAPI session
@@ -21,13 +19,13 @@ app.add_middleware(
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
+
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
-
+    return {"message": "Application running"}
 
 
 if __name__ == "__main__":
