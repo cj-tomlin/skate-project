@@ -38,19 +38,24 @@ cd skate-project
 Once inside the project directory, run the following command to install the project dependencies using Poetry:
 
 ```bash
-git clone https://github.com/tomlinc98/skate-project.git
-cd skate-project
+make install
 ```
 
 This will install all the required dependencies for the project as defined in the pyproject.toml file.
 
 ### 3. Set Up Pre-Commit Hooks
 
+Install the pre-commit hooks to enforce code style and linting before each commit.
+
 ```bash
 make install-pre-commit
 ```
 
-Pre-Commit is used to enforce code quality through automatic linting and formatting checks.
+You can also manually run `pre-commit` on all files:
+
+```bash
+make lint
+```
 
 ### 4. Running the Application
 
