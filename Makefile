@@ -4,7 +4,7 @@ install:
 
 # Install pre-commit hooks
 install-pre-commit:
-	poetry run pre-commit uninstall; poetry run pre-commit install
+	poetry run pre-commit install
 
 # Run pre-commit on all files (for linting and formatting)
 lint:
