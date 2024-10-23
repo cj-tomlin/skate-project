@@ -2,7 +2,7 @@
 install:
 	poetry install
 
-# Install and uninstall pre-commit hooks
+# Install pre-commit hooks
 install-pre-commit:
 	poetry run pre-commit uninstall; poetry run pre-commit install
 
