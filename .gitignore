@@ -5,6 +5,7 @@ poetry.lock
 instance/
 app.db
 *.sqlite3
+dist/
 
 # PyCharm
 .idea/
