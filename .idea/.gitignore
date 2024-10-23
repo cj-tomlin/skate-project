@@ -1,0 +1,22 @@
+# Poetry
+poetry.lock
+
+# FastAPI
+instance/
+app.db
+*.sqlite3
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+/shelf/
+/workspace.xml
+/httpRequests/
+/dataSources/
+/dataSources.local.xml
+
+# VS Code
+.vscode/
+.vscode/*
