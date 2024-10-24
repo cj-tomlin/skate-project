@@ -13,8 +13,6 @@ Follow the official installation guide for Poetry:
 [Poetry Installation Guide](https://python-poetry.org/docs/#installing-with-the-official-installer)
 
 Or Alternatively, the [PyCharm Poetry Installation Guide](https://www.jetbrains.com/help/pycharm/poetry.html)
-
-
 ### Installing Make
 
 First, install Chocolatey (Windows package manager) by following this guide:
