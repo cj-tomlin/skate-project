@@ -4,6 +4,9 @@ app.db
 *.sqlite3
 dist/
 
+#PyTest-cov
+.coverage
+
 # PyCharm
 .idea/
 *.iml
