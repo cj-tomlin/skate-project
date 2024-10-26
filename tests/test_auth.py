@@ -54,7 +54,7 @@ def test_decode_expired_access_token():
     token = create_access_token(data, expires_delta=timedelta(seconds=1))
 
     # Wait for the token to expire
-    time.sleep(2)
+    time.sleep(3)
 
     # Try to decode it, expecting an HTTPException due to expiration
     with pytest.raises(HTTPException) as excinfo:
@@ -92,7 +92,8 @@ def test_empty_payload():
     # Decode the token and ensure it's empty
     decoded_token = decode_access_token(token)
 
-    assert decoded_token == {}
+    assert "exp" in decoded_token
+    assert len(decoded_token) == 1  # Only 'exp' key should be present
 
 
 # Test token with a missing expiration
