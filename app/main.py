@@ -4,7 +4,7 @@ import webbrowser
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 
-import core.config as config
+from app.core import config
 
 from fastapi import FastAPI
 from app.api.routes import router as api_router
@@ -32,12 +32,6 @@ app.add_middleware(
     ],  # Allow all HTTP methods for now
     allow_headers=["*"],  # Allow all headers for now
 )
-
-
-@app.get("/")
-async def root():
-    return {"message": "Application running"}
-
 
 if __name__ == "__main__":
     print(f"CWD = {os.getcwd()}")
