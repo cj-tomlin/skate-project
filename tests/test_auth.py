@@ -1,6 +1,7 @@
 import pytest
 from datetime import timedelta
 from app.core.auth import create_access_token, decode_access_token
+from app.core.auth_utils import hash_password, verify_password
 import time
 from fastapi import HTTPException
 
@@ -136,3 +137,30 @@ def test_invalid_algorithm_in_token():
 
     assert excinfo.value.status_code == 401
     assert "Invalid token" in str(excinfo.value)
+
+
+def test_hash_and_verify_password():
+    password = "securepassword123"
+    hashed = hash_password(password)
+
+    assert verify_password(password, hashed) is True
+    assert verify_password("wrongpassword", hashed) is False
+
+
+def test_empty_password():
+    with pytest.raises(ValueError):
+        hash_password("")
+
+
+def test_verify_password_with_invalid_hash():
+    """
+    Test that an HTTPException is raised when verify_password is called with an invalid hash.
+    """
+    plain_password = "securepassword123"
+    invalid_hash = "not_a_valid_hash"
+
+    with pytest.raises(HTTPException) as excinfo:
+        verify_password(plain_password, invalid_hash)
+
+    assert excinfo.value.status_code == 401
+    assert "Incorrect password." in str(excinfo.value)
