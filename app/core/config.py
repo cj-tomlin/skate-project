@@ -1,5 +1,6 @@
 from pathlib import Path
 from pydantic_core import Url
+import os
 
 # Basic settings
 HOSTNAME: str = "127.0.0.1"
@@ -22,3 +23,15 @@ STATIC_BASE_URL: Url = Url(f"http://localhost:{PORT}/static")
 
 # Logging settings
 LOG_LEVEL: str = "INFO"
+
+# Database settings
+POSTGRES_USER = os.getenv("POSTGRES_USER", "skate_user")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "skate_password")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "skate_db")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = os.getenv("REDIS_PORT", "6379")
+
+DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:5432/{POSTGRES_DB}"
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
