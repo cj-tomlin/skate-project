@@ -4,9 +4,10 @@ import webbrowser
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 
-import config
+from app.core import config
 
 from fastapi import FastAPI
+from app.api.routes import router as api_router
 
 ###################################################################
 ## Initialise FastAPI session
@@ -14,19 +15,23 @@ from fastapi import FastAPI
 
 app = FastAPI(title="Skate Backend", version="0.1")
 
+# Include API router after the app initialization
+app.include_router(api_router)
+
+# Add CORS middleware
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
+    CORSMiddleware,  # type: ignore
+    allow_origins=["*"],  # Restrict this to specific domains in production
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allow_headers=["*"],
+    allow_methods=[
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+    ],  # Allow all HTTP methods for now
+    allow_headers=["*"],  # Allow all headers for now
 )
-
-
-@app.get("/")
-async def root():
-    return {"message": "Application running"}
-
 
 if __name__ == "__main__":
     print(f"CWD = {os.getcwd()}")
