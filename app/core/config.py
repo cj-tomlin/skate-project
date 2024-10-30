@@ -2,6 +2,8 @@ from pathlib import Path
 from pydantic_core import Url
 import os
 
+# TODO: Improve secret management and environment configuration
+
 # Basic settings
 HOSTNAME: str = "127.0.0.1"
 PORT: int = 8000

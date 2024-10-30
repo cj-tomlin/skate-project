@@ -5,7 +5,6 @@ import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core import config
-
 from fastapi import FastAPI
 from app.api.routes import router as api_router
 
@@ -13,7 +12,7 @@ from app.api.routes import router as api_router
 ## Initialise FastAPI session
 ###################################################################
 
-app = FastAPI(title="Skate Backend", version="0.1")
+app = FastAPI(title="Skate Backend", version="0.1.0")
 
 # Include API router after the app initialization
 app.include_router(api_router)
