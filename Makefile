@@ -40,6 +40,10 @@ reset-db:
 test:
 	pytest --cov=app tests/
 
+# Run coverage tests and print output to file for easy ChatGPT diagnosis
+test-print:
+	pytest --cov=app tests/ | tee pytest_output.txt
+
 # Run the FastAPI app with Uvicorn
 run:
 	poetry run uvicorn app.main:app --reload
