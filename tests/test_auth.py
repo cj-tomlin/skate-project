@@ -1,7 +1,7 @@
 import pytest
 from datetime import timedelta
-from app.core.auth import create_access_token, decode_access_token
-from app.core.auth_utils import hash_password, verify_password
+from app.services.jwt_utils import create_access_token, decode_access_token
+from app.services.auth_utils import hash_password, verify_password
 import time
 from fastapi import HTTPException
 

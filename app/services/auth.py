@@ -1,13 +1,12 @@
 from fastapi import Depends, HTTPException, status
-from app.core.auth import decode_access_token
+from sqlalchemy.orm import Session
+from app.services.jwt_utils import decode_access_token
 from app.services.user import get_user_by_id
 from app.models.user import User
-from sqlalchemy.orm import Session
-from app.dependencies.db import get_db_session
+from app.services.db import get_db_session
 
 
 def get_current_user(token: str, db: Session = Depends(get_db_session)) -> User:
-    """Retrieve the current user based on the provided token."""
     payload = decode_access_token(token)
     user_id = payload.get("sub")
     if not user_id:
