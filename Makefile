@@ -19,6 +19,7 @@ stop-db:
 	docker-compose down
 
 # Create a new Alembic migration
+# Usage: make migrations msg="Your migration message here"
 migrations:
 	poetry run alembic revision --autogenerate -m "$(msg)"
 
@@ -26,13 +27,14 @@ migrations:
 migrate:
 	poetry run alembic upgrade head
 
-# Run all migrations in one command
-migrate:
-	make migrate-create msg="$(msg)" && make migrate-upgrade
+# Run all migrations in one command (create and apply)
+# Usage: make migrate-all msg="Your migration message here"
+migrate-all:
+	make migrations msg="$(msg)" && make migrate
 
 # Reset database (drops all data)
 reset-db:
-	make stop-db && docker-compose rm -f postgres redis && make start-db && make migrate-upgrade
+	make stop-db && docker-compose rm -f postgres redis && make start-db && make migrate
 
 # Run tests with coverage
 test:
