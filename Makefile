@@ -38,7 +38,7 @@ reset-db:
 
 # Run tests with coverage
 test:
-	pytest --cov=app tests/
+	pytest --cov=app --log-cli-level=INFO tests/
 
 # Run coverage tests and print output to file for easy ChatGPT diagnosis
 test-print:

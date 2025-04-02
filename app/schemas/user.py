@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, HttpUrl
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, ConfigDict
 from typing import Optional
 from enum import Enum
 from datetime import datetime
@@ -12,11 +12,6 @@ class UserRole(str, Enum):
     # GUEST = "guest"
     # PREMIUM_USER = "premium_user"
     # CONTENT_CREATOR = "content_creator"
-
-
-# Schema for user-specific settings and preferences
-# class UserSettings(BaseModel):
-#     notifications: Optional[Dict[str, str]] = Field(None, description="User notification preferences")
 
 
 # Base schema for general user information
@@ -76,5 +71,4 @@ class UserResponse(UserBase):
         None, description="User-specific settings/preferences"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

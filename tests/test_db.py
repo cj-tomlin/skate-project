@@ -5,7 +5,7 @@ from app.db import get_db, get_redis, redis_client
 import redis.asyncio as redis
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 async def redis_key_cleanup():
     """Fixture to clean up test keys in Redis after each test."""
     yield
@@ -14,6 +14,7 @@ async def redis_key_cleanup():
 
 @pytest.mark.asyncio
 async def test_get_redis():
+    """Test if Redis instance can be retrieved and is of the correct type."""
     redis_instance = await get_redis()
     assert isinstance(redis_instance, redis.Redis)
 
@@ -24,18 +25,20 @@ async def test_postgresql_connection():
     async for session in get_db():
         try:
             result = await session.execute(text("SELECT 1"))
-            assert result.scalar() == 1
+            assert (
+                await result.scalar()
+            ) == 1  # Ensure `await` is used with `scalar()`
         except SQLAlchemyError as e:
             pytest.fail(f"PostgreSQL connection test failed: {e}")
 
 
 @pytest.mark.asyncio
 async def test_redis_connection(redis_key_cleanup):
-    """Test if a connection to the Redis database can be established."""
+    """Test if a connection to the Redis database can be established and set/get operations work."""
     try:
         await redis_client.set("test_key", "test_value")
         value = await redis_client.get("test_key")
-        assert value == "test_value"
+        assert value.decode() == "test_value"  # Decode value as Redis returns bytes
     except Exception as e:
         pytest.fail(f"Redis connection test failed: {e}")
 
@@ -44,7 +47,7 @@ async def test_redis_connection(redis_key_cleanup):
 async def test_redis_connection_error_handling(monkeypatch):
     """Test Redis connection error handling by mocking a connection failure."""
 
-    def mock_redis_connection_error(*args, **kwargs):
+    async def mock_redis_connection_error(*args, **kwargs):
         raise ConnectionError("Mocked connection error")
 
     monkeypatch.setattr(redis_client, "get", mock_redis_connection_error)
@@ -57,10 +60,45 @@ async def test_redis_connection_error_handling(monkeypatch):
 async def test_postgresql_connection_error_handling(monkeypatch):
     """Test PostgreSQL connection error handling by mocking a connection failure."""
 
-    def mock_session_execute_error(*args, **kwargs):
+    async def mock_session_execute_error(*args, **kwargs):
         raise SQLAlchemyError("Mocked SQLAlchemy connection error")
 
     async for session in get_db():
         monkeypatch.setattr(session, "execute", mock_session_execute_error)
         with pytest.raises(SQLAlchemyError, match="Mocked SQLAlchemy connection error"):
             await session.execute(text("SELECT 1"))
+
+
+@pytest.mark.asyncio
+async def test_database_session_commit_rollback(db_session):
+    """Test if commit and rollback operations on the database session work properly."""
+    try:
+        async with db_session.begin():  # Start a new transaction
+            await db_session.execute(
+                text(
+                    "CREATE TEMP TABLE test_table (id SERIAL PRIMARY KEY, name VARCHAR(50));"
+                )
+            )
+            await db_session.execute(
+                text("INSERT INTO test_table (name) VALUES ('Test Name');")
+            )
+
+        result = await db_session.execute(
+            text("SELECT name FROM test_table WHERE name = 'Test Name';")
+        )
+        assert (await result.scalar()) == "Test Name"
+
+        # Test rollback
+        async with db_session.begin():
+            await db_session.execute(
+                text("DELETE FROM test_table WHERE name = 'Test Name';")
+            )
+            await db_session.rollback()
+
+        result_after_rollback = await db_session.execute(
+            text("SELECT name FROM test_table WHERE name = 'Test Name';")
+        )
+        assert (await result_after_rollback.scalar()) == "Test Name"
+
+    except SQLAlchemyError as e:
+        pytest.fail(f"Database session commit/rollback test failed: {e}")

@@ -13,15 +13,32 @@ services:
     networks:
       - backend
 
+  postgres_test:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: skate_test_user
+      POSTGRES_PASSWORD: skate_test_password
+      POSTGRES_DB: skate_test_db
+    ports:
+      - "5433:5432"  # Expose on a different port for testing
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
     networks:
       - backend
+    depends_on:
+      - postgres
+      - postgres_test
 
 volumes:
   postgres_data:
+  postgres_test_data:
 
 networks:
   backend:
