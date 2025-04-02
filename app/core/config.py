@@ -31,9 +31,19 @@ POSTGRES_USER = os.getenv("POSTGRES_USER", "skate_user")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "skate_password")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "skate_db")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
 
+# Test database settings
+POSTGRES_TEST_USER = os.getenv("POSTGRES_TEST_USER", "skate_test_user")
+POSTGRES_TEST_PASSWORD = os.getenv("POSTGRES_TEST_PASSWORD", "skate_test_password")
+POSTGRES_TEST_DB = os.getenv("POSTGRES_TEST_DB", "skate_test_db")
+POSTGRES_TEST_PORT = os.getenv("POSTGRES_TEST_PORT", "5433")
+
+# Construct URLs
+DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+TEST_DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_TEST_USER}:{POSTGRES_TEST_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_TEST_PORT}/{POSTGRES_TEST_DB}"
+
+# Redis settings
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
-
-DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:5432/{POSTGRES_DB}"
 REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"

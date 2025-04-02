@@ -1,3 +1,4 @@
+from .base import Base
 from sqlalchemy import (
     Column,
     Integer,
@@ -7,11 +8,8 @@ from sqlalchemy import (
     DateTime,
 )
 from sqlalchemy.dialects.postgresql import JSON
-from sqlalchemy.ext.declarative import declarative_base
 from enum import Enum
 from datetime import datetime, timezone
-
-Base = declarative_base()
 
 
 class Role(str, Enum):

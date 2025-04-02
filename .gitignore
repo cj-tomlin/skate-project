@@ -4,8 +4,9 @@ app.db
 *.sqlite3
 dist/
 
-#PyTest-cov
+#PyTest
 .coverage
+pytest_output.txt
 
 # Python cache
 __pycache__/
