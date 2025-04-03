@@ -39,14 +39,16 @@ class User(Base):
     two_factor_enabled = Column(Boolean, default=False)
 
     # Timestamps
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(
-        DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=datetime.now(timezone.utc),
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
-    last_login_at = Column(DateTime, nullable=True)
-    deleted_at = Column(DateTime, nullable=True)
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+    last_login_at = Column(DateTime(timezone=True), nullable=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     # Profile Information
     profile_picture_url = Column(String(255), nullable=True)

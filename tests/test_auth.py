@@ -12,11 +12,11 @@ from unittest.mock import patch
 @pytest.fixture
 def sample_payload():
     """Fixture to provide a sample payload for token tests."""
-    return {"sub": "user_id_123"}
+    return {"sub": 123}
 
 
 class TestTokenCreationDecoding:
-    async def test_valid_token(self, sample_payload, setup_database):
+    async def test_valid_token(self, sample_payload):
         """Test creation and decoding of a valid JWT."""
         token = create_access_token(sample_payload)
         decoded_token = decode_access_token(token)
@@ -117,17 +117,24 @@ class TestGetCurrentUser:
     @patch("app.services.auth.decode_access_token")
     async def test_get_current_user_success(self, mock_decode_access_token, db_session):
         """Test successful retrieval of current user from token."""
-        sample_payload = {"sub": "user_id_123"}
+        sample_payload = {"sub": 123}
         mock_decode_access_token.return_value = sample_payload
 
-        # Add a user to the PostgreSQL test database
-        new_user = User(id="user_id_123", username="testuser", email="test@example.com")
+        # Add a user to the PostgreSQL test database with all required fields
+        new_user = User(
+            id=123,
+            username="testuser",
+            email="test@example.com",
+            hashed_password="test_hash",  # Add required hashed_password
+            is_active=True,
+            role="USER",
+        )
         db_session.add(new_user)
         await db_session.commit()
 
         result = await get_current_user("valid_token", db=db_session)
 
-        assert result.id == "user_id_123"
+        assert result.id == 123
         assert result.username == "testuser"
 
     @pytest.mark.asyncio
@@ -136,12 +143,16 @@ class TestGetCurrentUser:
         self, mock_decode_access_token, db_session
     ):
         """Test case where user is not found in the database."""
-        sample_payload = {"sub": "nonexistent_user_id"}
-        mock_decode_access_token.return_value = sample_payload
+        # Configure the mock to return a payload with a non-existent user ID
+        mock_decode_access_token.return_value = {
+            "sub": 9999
+        }  # Use a very large ID that won't exist
 
+        # Test that HTTPException is raised when user is not found
         with pytest.raises(HTTPException) as excinfo:
             await get_current_user("valid_token", db=db_session)
 
+        # Verify the exception details
         assert excinfo.value.status_code == 404
         assert "User not found" in str(excinfo.value)
 

@@ -61,7 +61,7 @@ async def undelete_user(db: AsyncSession, user_id: int) -> bool:
 async def update_last_login(db: AsyncSession, user_id: int) -> bool:
     user = await get_user_by_id(db, user_id)
     if user:
-        user.last_login = datetime.now(timezone.utc)
+        user.last_login_at = datetime.now(timezone.utc)
         await db.commit()
         return True
     return False

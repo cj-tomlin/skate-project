@@ -1,20 +1,11 @@
-import pytest
 import pytest_asyncio
-import asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from app.models.base import Base
 
 # Replace with your actual test database URL
 TEST_DATABASE_URL = "postgresql+asyncpg://skate_test_user:skate_test_password@localhost:5433/skate_test_db"
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create an instance of the default event loop for each test case."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+# Let pytest-asyncio handle the event loop
 
 
 @pytest_asyncio.fixture(scope="function")

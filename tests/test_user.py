@@ -67,7 +67,7 @@ async def test_delete_and_undelete_user(db_session, unique_user_data):
 async def test_update_last_login(db_session, unique_user_data):
     user = await create_user(db_session, unique_user_data)
     assert await update_last_login(db_session, user.id)
-    assert (await get_user_by_id(db_session, user.id)).last_login is not None
+    assert (await get_user_by_id(db_session, user.id)).last_login_at is not None
 
 
 @pytest.mark.asyncio
