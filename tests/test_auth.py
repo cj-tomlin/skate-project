@@ -1,12 +1,12 @@
 import pytest
 from datetime import timedelta
+from unittest.mock import patch, MagicMock
+from fastapi import HTTPException, status
 from app.services.jwt_utils import create_access_token, decode_access_token
 from app.services.auth_utils import hash_password, verify_password
 from app.services.auth import get_current_user
 from app.models.user import User
-from fastapi import HTTPException
 import time
-from unittest.mock import patch
 
 
 @pytest.fixture
@@ -169,3 +169,99 @@ class TestGetCurrentUser:
 
         assert excinfo.value.status_code == 401
         assert "Invalid token" in str(excinfo.value)
+
+    @pytest.mark.asyncio
+    @patch("app.services.auth.decode_access_token")
+    @patch("app.services.auth.get_user_by_id")
+    async def test_get_current_user_with_numeric_id(
+        self, mock_get_user_by_id, mock_decode_access_token
+    ):
+        """Test get_current_user with a numeric user ID."""
+        # Setup
+        mock_decode_access_token.return_value = {"sub": 123}
+        mock_user = MagicMock(spec=User)
+        mock_get_user_by_id.return_value = mock_user
+        mock_db = MagicMock()
+
+        # Execute
+        result = await get_current_user("valid_token", mock_db)
+
+        # Assert
+        assert result == mock_user
+        mock_decode_access_token.assert_called_once_with("valid_token")
+        mock_get_user_by_id.assert_called_once_with(mock_db, 123)
+
+    @pytest.mark.asyncio
+    @patch("app.services.auth.decode_access_token")
+    @patch("app.services.auth.get_user_by_id")
+    async def test_get_current_user_with_string_numeric_id(
+        self, mock_get_user_by_id, mock_decode_access_token
+    ):
+        """Test get_current_user with a string numeric user ID."""
+        # Setup
+        mock_decode_access_token.return_value = {"sub": "123"}
+        mock_user = MagicMock(spec=User)
+        mock_get_user_by_id.return_value = mock_user
+        mock_db = MagicMock()
+
+        # Execute
+        result = await get_current_user("valid_token", mock_db)
+
+        # Assert
+        assert result == mock_user
+        mock_decode_access_token.assert_called_once_with("valid_token")
+        mock_get_user_by_id.assert_called_once_with(mock_db, 123)
+
+    @pytest.mark.asyncio
+    @patch("app.services.auth.decode_access_token")
+    @patch("app.services.auth.get_user_by_id")
+    async def test_get_current_user_with_prefixed_id(
+        self, mock_get_user_by_id, mock_decode_access_token
+    ):
+        """Test get_current_user with a prefixed user ID."""
+        # Setup
+        mock_decode_access_token.return_value = {"sub": "user_id_123"}
+        mock_user = MagicMock(spec=User)
+        mock_get_user_by_id.return_value = mock_user
+        mock_db = MagicMock()
+
+        # Execute
+        result = await get_current_user("valid_token", mock_db)
+
+        # Assert
+        assert result == mock_user
+        mock_decode_access_token.assert_called_once_with("valid_token")
+        mock_get_user_by_id.assert_called_once_with(mock_db, 123)
+
+    @pytest.mark.asyncio
+    @patch("app.services.auth.decode_access_token")
+    async def test_get_current_user_missing_sub(self, mock_decode_access_token):
+        """Test get_current_user with a token missing the 'sub' claim."""
+        # Setup
+        mock_decode_access_token.return_value = {}  # No 'sub' claim
+        mock_db = MagicMock()
+
+        # Execute & Assert
+        with pytest.raises(HTTPException) as excinfo:
+            await get_current_user("valid_token", mock_db)
+        assert excinfo.value.status_code == status.HTTP_401_UNAUTHORIZED
+        assert "Invalid token" in str(excinfo.value.detail)
+        assert excinfo.value.headers["WWW-Authenticate"] == "Bearer"
+
+    @pytest.mark.asyncio
+    @patch("app.services.auth.decode_access_token")
+    @patch("app.services.auth.get_user_by_id")
+    async def test_get_current_user_invalid_id_format(
+        self, mock_get_user_by_id, mock_decode_access_token
+    ):
+        """Test get_current_user with an invalid ID format."""
+        # Setup
+        mock_decode_access_token.return_value = {"sub": "invalid_format"}
+        mock_get_user_by_id.return_value = None
+        mock_db = MagicMock()
+
+        # Execute & Assert
+        with pytest.raises(HTTPException) as excinfo:
+            await get_current_user("valid_token", mock_db)
+        assert excinfo.value.status_code == status.HTTP_404_NOT_FOUND
+        assert "User not found" in str(excinfo.value.detail)
